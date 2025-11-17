@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 export default function MyOrders() {
   const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) {
