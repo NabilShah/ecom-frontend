@@ -4,6 +4,7 @@ import Navbar from "./components/Navbar";
 import { AuthContext } from "./context/AuthContext";
 
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
 import MyOrders from "./pages/MyOrders";
@@ -18,6 +19,7 @@ function App() {
 
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetail />} />
 

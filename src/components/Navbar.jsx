@@ -11,12 +11,14 @@ export default function Navbar({ loggedIn, onLogout }) {
 
         <Box>
           <Button color="inherit" component={Link} to="/products">Products</Button>
-          <Button color="inherit" component={Link} to="/orders">My Orders</Button>
 
           {loggedIn ? (
             <Button color="inherit" onClick={onLogout}>Logout</Button>
           ) : (
-            <Button color="inherit" component={Link} to="/login">Login</Button>
+            <>
+              <Button color="inherit" component={Link} to="/login">Login</Button>
+              <Button color="inherit" component={Link} to="/register">Register</Button>
+            </>
           )}
         </Box>
       </Toolbar>

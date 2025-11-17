@@ -9,6 +9,7 @@ export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [qty, setQty] = useState(1);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,6 +17,12 @@ export default function ProductDetail() {
   }, [id]);
 
   const placeOrder = async () => {
+    if (!user) {
+      alert("Please login to place an order");
+      navigate("/login");
+      return;
+    }
+
     try {
       await api.post("/customer/orders", {
         items: [
@@ -26,10 +33,12 @@ export default function ProductDetail() {
           },
         ],
       });
+
       alert("Order placed!");
       navigate("/orders");
+
     } catch (err) {
-      alert("Login first");
+      alert("Something went wrong");
     }
   };
 

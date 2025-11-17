@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from "react";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
@@ -9,9 +9,17 @@ export const AuthProvider = ({ children }) => {
   // load user from token
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      const decoded = jwtDecode(token);
-      setUser(decoded);
+      if (token && token.split(".").length === 3) {
+      try {
+        const decoded = jwtDecode(token);
+        setUser(decoded);
+      } catch (err) {
+        console.error("Invalid token, clearing...");
+        localStorage.removeItem("token");
+        setUser(null);
+      }
+    } else {
+      localStorage.removeItem("token"); // remove garbage values
     }
   }, []);
 

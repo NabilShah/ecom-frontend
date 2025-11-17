@@ -4,13 +4,18 @@ import socket, { joinCustomerRoom } from "../sockets/customerSocket";
 import { AuthContext } from "../context/AuthContext";
 import { Container, Paper, Typography, Button } from "@mui/material";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function MyOrders() {
   const { user } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
 
     joinCustomerRoom(user.id);
 
