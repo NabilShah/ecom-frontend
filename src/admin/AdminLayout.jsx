@@ -7,17 +7,14 @@ import { Box } from "@mui/material";
 export default function AdminLayout({ children }) {
   const { user } = useContext(AuthContext);
 
-  // Protect admin routes
   if (!user || user.role !== "admin") {
     return <Navigate to="/admin/login" />;
   }
 
   return (
-    <Box display="flex">
+    <Box sx={{ minHeight: "100vh", p: 2 }}>
       <Sidebar />
-      <Box flexGrow={1} p={3} sx={{ background: "#f5f5f5", minHeight: "100vh" }}>
-        {children}
-      </Box>
+      {children}
     </Box>
   );
 }

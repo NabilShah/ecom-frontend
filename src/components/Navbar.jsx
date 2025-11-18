@@ -1,26 +1,42 @@
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
+import { AppBar, Toolbar, Button, Box } from "@mui/material";
 
-export default function Navbar({ loggedIn, onLogout }) {
+export default function Navbar() {
+  const { user, logout } = useContext(AuthContext);
+
+  const isAdmin = user?.role === "admin";
+
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+    <AppBar position="sticky" sx={{ mb: 2 }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        
+        {/* Logo */}
+        <Box component={Link} to="/" sx={{ textDecoration: "none", color: "#fff", fontWeight: 700 }}>
           E-Commerce
-        </Typography>
+        </Box>
 
+        {/* Right Side */}
         <Box>
-          <Button color="inherit" component={Link} to="/products">Products</Button>
-
-          {loggedIn ? (
-            <Button color="inherit" onClick={onLogout}>Logout</Button>
+          {isAdmin ? (
+            // ADMIN NAVBAR
+            <Button color="inherit" onClick={logout}>Logout</Button>
           ) : (
+            // CUSTOMER NAVBAR
             <>
-              <Button color="inherit" component={Link} to="/login">Login</Button>
-              <Button color="inherit" component={Link} to="/register">Register</Button>
+              <Button color="inherit" component={Link} to="/products">Products</Button>
+              <Button color="inherit" component={Link} to="/orders">My Orders</Button>
+
+              {!user ? (
+                <Button color="inherit" component={Link} to="/login">Login</Button>
+              ) : (
+                <Button color="inherit" onClick={logout}>Logout</Button>
+              )}
             </>
           )}
         </Box>
+
       </Toolbar>
     </AppBar>
   );

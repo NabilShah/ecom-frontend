@@ -1,31 +1,68 @@
-import { Drawer, List, ListItemButton, ListItemText, Toolbar } from "@mui/material";
+import { useState } from "react";
+import {
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  Fab,
+  Box
+} from "@mui/material";
+
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 import { Link } from "react-router-dom";
 
 export default function Sidebar() {
+  const [open, setOpen] = useState(false);
+
   return (
-    <Drawer variant="permanent" sx={{ width: 240 }}>
-      <Toolbar />
-      <List>
-        <ListItemButton component={Link} to="/admin/dashboard">
-          <ListItemText primary="Dashboard" />
-        </ListItemButton>
+    <>
+      {/* Floating Sticky Menu Button */}
+      <Fab
+        color="primary"
+        onClick={() => setOpen(!open)}
+        sx={{
+          position: "fixed",
+          bottom: 20,
+          left: 20,
+          zIndex: 2000
+        }}
+      >
+        {open ? <CloseIcon /> : <MenuIcon />}
+      </Fab>
 
-        <ListItemButton component={Link} to="/admin/products">
-          <ListItemText primary="Products" />
-        </ListItemButton>
+      {/* Sidebar Drawer */}
+      <Drawer
+        anchor="left"
+        open={open}
+        onClose={() => setOpen(false)}
+      >
+        <Box sx={{ width: 260, mt: 4 }}>
+          <List>
 
-        <ListItemButton component={Link} to="/admin/orders">
-          <ListItemText primary="Orders" />
-        </ListItemButton>
+            <ListItemButton component={Link} to="/admin/dashboard" onClick={() => setOpen(false)}>
+              <ListItemText primary="Dashboard" />
+            </ListItemButton>
 
-        <ListItemButton component={Link} to="/admin/delivery-partners">
-          <ListItemText primary="Delivery Partners" />
-        </ListItemButton>
+            <ListItemButton component={Link} to="/admin/products" onClick={() => setOpen(false)}>
+              <ListItemText primary="Products" />
+            </ListItemButton>
 
-        <ListItemButton component={Link} to="/admin/live-status">
-          <ListItemText primary="Live Status" />
-        </ListItemButton>
-      </List>
-    </Drawer>
+            <ListItemButton component={Link} to="/admin/orders" onClick={() => setOpen(false)}>
+              <ListItemText primary="Orders" />
+            </ListItemButton>
+
+            <ListItemButton component={Link} to="/admin/delivery-partners" onClick={() => setOpen(false)}>
+              <ListItemText primary="Delivery Partners" />
+            </ListItemButton>
+
+            <ListItemButton component={Link} to="/admin/live-status" onClick={() => setOpen(false)}>
+              <ListItemText primary="Live Status" />
+            </ListItemButton>
+
+          </List>
+        </Box>
+      </Drawer>
+    </>
   );
 }
