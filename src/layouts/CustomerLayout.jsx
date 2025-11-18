@@ -1,13 +1,11 @@
 import Navbar from "../components/Navbar";
-import { Box } from "@mui/material";
+import { Outlet } from "react-router-dom";
 
-export default function CustomerLayout({ children }) {
+export default function CustomerLayout() {
   return (
-    <Box>
+    <>
       <Navbar />
-      <Box sx={{ mt: 2 }}>
-        {children}
-      </Box>
-    </Box>
+      <Outlet />
+    </>
   );
 }
