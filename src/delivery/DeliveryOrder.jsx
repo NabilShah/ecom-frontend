@@ -1,10 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import api from "../api/axiosClient";
 import { AuthContext } from "../context/AuthContext";
-import {
-  Table, TableHead, TableRow, TableCell, TableBody,
-  Container, Typography, Button
-} from "@mui/material";
+import { Table, TableHead, TableRow, TableCell, TableBody, Container, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import socket, { joinDeliveryRoom } from "../sockets/customerSocket";
 
