@@ -1,13 +1,14 @@
 import { useEffect, useState, useContext } from "react";
-import api from "../../api/axiosClient";
-import { AuthContext } from "../../context/AuthContext";
+import api from "../api/axiosClient";
+import { AuthContext } from "../context/AuthContext";
 import {
   Table, TableHead, TableRow, TableCell, TableBody,
   Container, Typography, Button
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import socket, { joinDeliveryRoom } from "../sockets/customerSocket";
 
-export default function LiveStatuses() {
+export default function DeliveryOrder() {
   const [orders, setOrders] = useState([]);
   const { user, loadingUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -15,14 +16,68 @@ export default function LiveStatuses() {
   // Protect admin
   useEffect(() => {
     if (loadingUser) return;
-    if (!user || user.role !== "admin") {
-      navigate("/admin/login");
+    if (!user || user.role !== "delivery") {
+      navigate("/delivery/login");
     }
   }, [user, loadingUser, navigate]);
 
   useEffect(() => {
-    api.get("/admin/orders").then((res) => setOrders(res.data));
+    async function loadOrders() {
+        const unassignedRes = await api.get("/delivery/unassigned");
+        const myOrdersRes = await api.get("/delivery/my-orders");
+
+        setOrders([...unassignedRes.data, ...myOrdersRes.data]); 
+    }
+    loadOrders();
   }, []);
+
+  const updateStatus = async (orderId, newStatus) => {
+    try {
+        const res = await api.patch(`/delivery/status/${orderId}`, { status: newStatus });
+        const updatedOrder = res.data.order;
+
+        // Move order to correct status group
+        setOrders(prev =>
+        prev.map(o => o._id === orderId ? updatedOrder : o)
+        );
+
+    } catch (err) {
+        console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+
+    // DELIVERY partner joins socket room
+    joinDeliveryRoom(user.id);
+
+    // LIVE ORDER UPDATED
+    socket.on("orderUpdated", (updated) => {
+        setOrders((prev) =>
+        prev.some((o) => o._id === updated._id)
+            ? prev.map((o) => (o._id === updated._id ? updated : o))
+            : prev       // delivery should not auto-add unrelated orders
+        );
+    });
+
+    // ORDER ASSIGNED to delivery partner
+    socket.on("orderAssigned", (updated) => {
+        // Only add if this delivery partner is assigned
+        if (updated.assignedTo === user.id) {
+        setOrders((prev) =>
+            prev.some((o) => o._id === updated._id)
+            ? prev.map((o) => (o._id === updated._id ? updated : o))
+            : [...prev, updated]
+        );
+        }
+  });
+
+  return () => {
+    socket.off("orderUpdated");
+    socket.off("orderAssigned");
+  };
+}, [user]);
 
   const statuses = [
     "unassigned",
@@ -100,10 +155,45 @@ export default function LiveStatuses() {
                 </TableCell>
 
                 <TableCell>₹{o.total}</TableCell>
-                <TableCell style={{ textTransform: "capitalize" }}>
+                {/* <TableCell style={{ textTransform: "capitalize" }}>
                     {o.status.replaceAll("_", " ")}
-                </TableCell>
+                </TableCell> */}
+                <TableCell>
+  {o.status === "unassigned" ? (
+    <Button
+      variant="contained"
+      color="primary"
+      size="small"
+      onClick={async () => {
+        // Use the API /delivery/accept/:orderId
+        const res = await api.post(`/delivery/accept/${o._id}`);
+        setOrders(prev =>
+          prev.map(ord => ord._id === o._id ? res.data.order : ord)
+        );
+      }}
+    >
+      Accept
+    </Button>
+  ) : (
+    <select
+      value={o.status}
+      onChange={(e) => updateStatus(o._id, e.target.value)}
+      style={{ padding: "6px", borderRadius: "4px" }}
+    >
+      {o.status === "accepted" && (
+        <option value="picked_up">Picked Up</option>
+      )}
 
+      {o.status === "picked_up" && (
+        <option value="on_the_way">On The Way</option>
+      )}
+
+      {o.status === "on_the_way" && (
+        <option value="delivered">Delivered</option>
+      )}
+    </select>
+  )}
+</TableCell>
                 <TableCell>
                     {o.assignedTo ? (
                     <>

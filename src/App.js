@@ -11,14 +11,17 @@ import MyOrders from "./pages/MyOrders";
 import OrderDetail from "./pages/OrderDetail";
 
 import AdminLogin from "./admin/AdminLogin";
-import AdminLayout from "./admin/AdminLayout";
+import AdminLayout from "./layouts/AdminLayout";
 
-import Dashboard from "./admin/pages/Dashboard";
 import ProductsList from "./admin/pages/ProductsList";
 import AddProduct from "./admin/pages/AddProduct";
+import UpdateProduct from "./admin/pages/UpdateProduct";
 import Orders from "./admin/pages/Orders";
 import DeliveryPartners from "./admin/pages/DeliveryPartners";
 import LiveStatuses from "./admin/pages/LiveStatuses";
+
+import DeliveryLogin from "./delivery/DeliveryLogin";
+import DeliveryOrder from "./delivery/DeliveryOrder";
 
 function App() {
   const { user, logout } = useContext(AuthContext);
@@ -38,12 +41,15 @@ function App() {
 
         <Route path="/admin/login" element={<AdminLogin />} />
 
-        <Route path="/admin/dashboard" element={<AdminLayout><Dashboard /></AdminLayout>} />
         <Route path="/admin/products" element={<AdminLayout><ProductsList /></AdminLayout>} />
         <Route path="/admin/add-product" element={<AdminLayout><AddProduct /></AdminLayout>} />
+        <Route path="/admin/update-product/:id" element={<AdminLayout><UpdateProduct /></AdminLayout>} />
         <Route path="/admin/orders" element={<AdminLayout><Orders /></AdminLayout>} />
         <Route path="/admin/delivery-partners" element={<AdminLayout><DeliveryPartners /></AdminLayout>} />
         <Route path="/admin/live-status" element={<AdminLayout><LiveStatuses /></AdminLayout>} />
+
+        <Route path="/delivery/login" element={<DeliveryLogin />} />
+        <Route path="/delivery/orders" element={<DeliveryOrder />} />
 
         <Route path="*" element={<Products />} />
       </Routes>

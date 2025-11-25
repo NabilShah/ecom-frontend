@@ -8,7 +8,7 @@ import { useEffect } from "react";
 export default function ProductCard({ product = {} }) {
   const imageUrl = product.images?.[0]
   ? `${process.env.REACT_APP_IMAGE_URL}${product.images[0]}`
-  : "https://via.placeholder.com/400x300?text=No+Image";
+  : process.env.PUBLIC_URL + "/no_preview.png";
 
   useEffect(() => {
     console.log("imageUrl:", imageUrl);
@@ -131,6 +131,12 @@ export default function ProductCard({ product = {} }) {
               ₹{Number(mrp).toLocaleString()}
             </Typography>
           )}
+          <Typography
+            variant="caption"
+            color={product.stock > 0 ? "success.main" : "error.main"}
+          >
+            {product.stock > 0 ? `${product.stock} left in stock` : "Out of Stock"}
+          </Typography>
         </Box>
       </CardContent>
 

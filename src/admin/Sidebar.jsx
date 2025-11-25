@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  Drawer,
-  List,
-  ListItemButton,
-  ListItemText,
-  Fab,
-  Box
-} from "@mui/material";
+import { Drawer, List, ListItemButton, ListItemText, Fab, Box } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
@@ -39,10 +32,6 @@ export default function Sidebar() {
       >
         <Box sx={{ width: 260, mt: 4 }}>
           <List>
-
-            <ListItemButton component={Link} to="/admin/dashboard" onClick={() => setOpen(false)}>
-              <ListItemText primary="Dashboard" />
-            </ListItemButton>
 
             <ListItemButton component={Link} to="/admin/products" onClick={() => setOpen(false)}>
               <ListItemText primary="Products" />

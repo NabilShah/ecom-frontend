@@ -1,10 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosClient";
 import { Button, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Link } from "react-router-dom";
 
 export default function ProductsList() {
   const [products, setProducts] = useState([]);
+  const { user, loadingUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loadingUser) return;
+
+    if (!user) {
+      navigate("/admin/login");
+      return;
+    }
+
+    if (user.role !== "admin") {
+      navigate("/");      // redirect non-admin users
+    }
+  }, [user, loadingUser, navigate]);
 
   useEffect(() => {
     api.get("/customer/products").then((res) => setProducts(res.data));

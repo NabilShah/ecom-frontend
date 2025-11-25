@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/axiosClient";
 import { Button, Container, Typography, Box, TextField, Paper, Grid, MenuItem, Divider, Select, FormControl, InputLabel, Chip,} from "@mui/material";
 import { AuthContext } from "../context/AuthContext";
+import socket from "../sockets/customerSocket";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -10,11 +11,6 @@ export default function ProductDetail() {
   const [qty, setQty] = useState(1);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-
-  // checkout form state
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [pin, setPin] = useState("");
@@ -38,6 +34,19 @@ export default function ProductDetail() {
   }, [id]);
 
   useEffect(() => {
+    socket.on("stockUpdated", ({ productId, stock }) => {
+      if (productId === id) {
+        setProduct((prev) => ({
+          ...prev,
+          stock
+        }));
+      }
+    });
+
+    return () => socket.off("stockUpdated");
+  }, [id]);
+
+  useEffect(() => {
     if (!product) return;
     const s = Number(product.stock || 0);
     if (qty > s) setQty(s);
@@ -48,18 +57,6 @@ export default function ProductDetail() {
     if (!user) {
       alert("Please login to continue.");
       navigate("/login");
-      return false;
-    }
-    if (!email || !email.includes("@")) {
-      alert("Please enter a valid email.");
-      return false;
-    }
-    if (!phone || phone.length < 6) {
-      alert("Please enter a valid phone number.");
-      return false;
-    }
-    if (!name) {
-      alert("Please enter your name.");
       return false;
     }
     if (!address) {

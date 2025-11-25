@@ -5,22 +5,23 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   // load user from token
   useEffect(() => {
     const token = localStorage.getItem("token");
-      if (token && token.split(".").length === 3) {
+
+    if (token && token.split(".").length === 3) {
       try {
         const decoded = jwtDecode(token);
-        setUser(decoded);
+        setUser(decoded);        // 🔥 Restore user from decoded token
       } catch (err) {
-        console.error("Invalid token, clearing...");
         localStorage.removeItem("token");
         setUser(null);
       }
-    } else {
-      localStorage.removeItem("token"); // remove garbage values
     }
+
+    setLoadingUser(false);
   }, []);
 
   const login = (token) => {
@@ -34,7 +35,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, loadingUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

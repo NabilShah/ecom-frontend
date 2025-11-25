@@ -1,21 +1,16 @@
-import { useState, useContext } from "react";
-import { TextField, Button, Paper, Typography, Box, IconButton, InputAdornment, Snackbar, Alert } from "@mui/material";
+import { useContext, useState } from "react";
+import { TextField, Button, Paper, Typography, IconButton, InputAdornment, Snackbar, Alert } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axiosClient";
 import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function DeliveryLogin() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -45,19 +40,28 @@ export default function Login() {
 
     try {
       const res = await api.post("/auth/login", form);
-      login(res.data.token);
 
+      if (res.data.user.role !== "delivery") {
+        setSnackbar({
+          open: true,
+          message: "Access Denied: Not a Delivery.",
+          severity: "error",
+        });
+        return;
+      }
+
+      login(res.data.token);
       setSnackbar({
         open: true,
-        message: "Login successful! Redirecting...",
+        message: "Admin login successful! Redirecting...",
         severity: "success",
       });
 
-      setTimeout(() => navigate("/products"), 1500);
+      setTimeout(() => navigate("/delivery/orders"), 1500);
     } catch (err) {
       setSnackbar({
         open: true,
-        message: "Invalid credentials. Please try again.",
+        message: "Invalid login credentials.",
         severity: "error",
       });
     }
@@ -67,7 +71,7 @@ export default function Login() {
     <>
       <Paper sx={{ p: 4, maxWidth: 400, mx: "auto", mt: 8 }}>
         <Typography variant="h5" mb={2}>
-          Login
+          Delivery Login
         </Typography>
 
         <TextField
@@ -113,24 +117,9 @@ export default function Login() {
         >
           Login
         </Button>
-
-        <Box sx={{ textAlign: "center", mt: 2 }}>
-          <Typography variant="body2">
-            Don’t have an account?{" "}
-            <Link
-              to="/register"
-              style={{
-                textDecoration: "none",
-                color: "#1976d2",
-                fontWeight: 500,
-              }}
-            >
-              Register
-            </Link>
-          </Typography>
-        </Box>
       </Paper>
 
+      {/* ✅ Snackbar */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={2500}

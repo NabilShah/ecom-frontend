@@ -3,6 +3,7 @@ import api from "../api/axiosClient";
 import ProductCard from "../components/ProductCard";
 import { Container, Typography, Box, TextField, InputAdornment, Select, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import socket from "../sockets/customerSocket";
 
 export default function Products() {
   const [products, setProducts] = useState([]);
@@ -12,9 +13,58 @@ export default function Products() {
   useEffect(() => {
     api.get("/customer/products").then((res) => setProducts(res.data || []));
   }, []);
+
   useEffect(() => {
-  console.log("Products from API:", products);
-}, [products]);
+    // LIVE NEW PRODUCT
+    socket.on("productCreated", (newProduct) => {
+      setProducts((prev) => [...prev, newProduct]);
+    });
+
+    // LIVE PRODUCT UPDATE
+    socket.on("productUpdated", (updated) => {
+      setProducts((prev) =>
+        prev.map((p) => (p._id === updated._id ? updated : p))
+      );
+    });
+
+    // LIVE DELETE
+    socket.on("productDeleted", (id) => {
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+    });
+
+    // STOCK ONLY UPDATE (already implemented)
+    socket.on("stockUpdated", ({ productId, stock }) => {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === productId ? { ...p, stock } : p
+        )
+      );
+    });
+
+    return () => {
+      socket.off("productCreated");
+      socket.off("productUpdated");
+      socket.off("productDeleted");
+      socket.off("stockUpdated");
+    };
+  }, []);
+
+  useEffect(() => {
+    socket.on("stockUpdated", ({ productId, stock }) => {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === productId ? { ...p, stock } : p
+        )
+      );
+    });
+
+    return () => socket.off("stockUpdated");
+  }, []);
+
+  useEffect(() => {
+    console.log("Products from API:", products);
+  }, [products]);
+
   // simple client-side filter/sort for demo
   const filtered = products
     .filter((p) => p.name?.toLowerCase().includes(q.toLowerCase()))

@@ -8,7 +8,7 @@ import { LocalShipping, CheckCircle, AccessTime, Cancel, Receipt,} from "@mui/ic
 import { format } from "date-fns";
 
 export default function MyOrders() {
-  const { user } = useContext(AuthContext);
+  const { user, loadingUser } = useContext(AuthContext);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,6 +33,7 @@ export default function MyOrders() {
   };
 
   useEffect(() => {
+    if (loadingUser) return;
     if (!user) {
       navigate("/login");
       return;
@@ -64,9 +65,7 @@ export default function MyOrders() {
     return () => {
       socket.off("orderUpdated");
     };
-  }, [user, navigate]);
-
-  if (!user) return null;
+  }, [user, loadingUser, navigate]);
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
@@ -155,7 +154,7 @@ export default function MyOrders() {
                             Total Amount
                           </Typography>
                           <Typography variant="h6" fontWeight={700} color="primary">
-                            ${order.total?.toFixed(2) || "0.00"}
+                            ₹{order.total?.toFixed(2) || "0.00"}
                           </Typography>
                         </Box>
                       </Stack>

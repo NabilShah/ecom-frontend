@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import Sidebar from "./Sidebar";
+import Sidebar from "../admin/Sidebar";
 import { Box } from "@mui/material";
 
 export default function AdminLayout({ children }) {
