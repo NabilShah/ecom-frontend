@@ -50,18 +50,6 @@ export default function Products() {
   }, []);
 
   useEffect(() => {
-    socket.on("stockUpdated", ({ productId, stock }) => {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p._id === productId ? { ...p, stock } : p
-        )
-      );
-    });
-
-    return () => socket.off("stockUpdated");
-  }, []);
-
-  useEffect(() => {
     console.log("Products from API:", products);
   }, [products]);
 

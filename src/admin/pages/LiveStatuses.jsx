@@ -6,6 +6,7 @@ import {
   Container, Typography, Button
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import socket, { joinAdminRoom } from "../../sockets/customerSocket";
 
 export default function LiveStatuses() {
   const [orders, setOrders] = useState([]);
@@ -23,6 +24,51 @@ export default function LiveStatuses() {
   useEffect(() => {
     api.get("/admin/orders").then((res) => setOrders(res.data));
   }, []);
+
+    useEffect(() => {
+    if (!user || user.role !== "admin") return;
+
+    joinAdminRoom();
+
+    // Helper: sort newest → oldest
+    const sortOrders = (list) =>
+        [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    // 🔥 When customer places a new order
+    const onNewOrder = (order) => {
+        setOrders(prev => sortOrders([order, ...prev]));
+    };
+
+    // 🔥 When delivery accepts an order
+    const onOrderAssigned = (updated) => {
+        setOrders(prev =>
+        sortOrders(
+            prev.some(o => o._id === updated._id)
+            ? prev.map(o => (o._id === updated._id ? updated : o))
+            : [updated, ...prev]
+        )
+        );
+    };
+
+    // 🔥 When delivery updates status: picked_up / on_the_way / delivered / cancelled
+    const onOrderUpdated = (updated) => {
+        setOrders(prev =>
+        sortOrders(
+            prev.map(o => (o._id === updated._id ? updated : o))
+        )
+        );
+    };
+
+    socket.on("newOrder", onNewOrder);
+    socket.on("orderAssigned", onOrderAssigned);
+    socket.on("orderUpdated", onOrderUpdated);
+
+    return () => {
+        socket.off("newOrder", onNewOrder);
+        socket.off("orderAssigned", onOrderAssigned);
+        socket.off("orderUpdated", onOrderUpdated);
+    };
+    }, [user]);
 
   const statuses = [
     "unassigned",

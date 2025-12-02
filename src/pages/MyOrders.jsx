@@ -16,17 +16,25 @@ export default function MyOrders() {
 
   const getStatusConfig = (status) => {
     switch (status?.toLowerCase()) {
+
+      case "unassigned":
+        return { color: "warning", icon: <Receipt fontSize="small" />, label: "Unassigned" };
+
+      case "accepted":
+        return { color: "info", icon: <AccessTime fontSize="small" />, label: "Accepted" };
+
+      case "picked_up":
+        return { color: "primary", icon: <LocalShipping fontSize="small" />, label: "Picked Up" };
+
+      case "on_the_way":
+        return { color: "secondary", icon: <LocalShipping fontSize="small" />, label: "On The Way" };
+
       case "delivered":
         return { color: "success", icon: <CheckCircle fontSize="small" />, label: "Delivered" };
-      case "shipped":
-      case "out for delivery":
-        return { color: "info", icon: <LocalShipping fontSize="small" />, label: "Shipped" };
-      case "processing":
-      case "confirmed":
-        return { color: "warning", icon: <AccessTime fontSize="small" />, label: "Processing" };
+
       case "cancelled":
         return { color: "error", icon: <Cancel fontSize="small" />, label: "Cancelled" };
-      case "pending":
+
       default:
         return { color: "default", icon: <Receipt fontSize="small" />, label: "Pending" };
     }
@@ -45,7 +53,13 @@ export default function MyOrders() {
       try {
         setLoading(true);
         const res = await api.get("/customer/orders");
-        setOrders(res.data || []);
+        const sorted = [...res.data].sort((a, b) => {
+          if (a.status === "cancelled" && b.status !== "cancelled") return 1;
+          if (a.status !== "cancelled" && b.status === "cancelled") return -1;
+          return new Date(b.createdAt) - new Date(a.createdAt); // newest first
+        });
+
+        setOrders(sorted);
       } catch (err) {
         setError("Failed to load your orders. Please try again later.");
         console.error(err);
@@ -56,16 +70,57 @@ export default function MyOrders() {
 
     fetchOrders();
 
-    socket.on("orderUpdated", (updatedOrder) => {
-      setOrders((prev) =>
-        prev.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
-      );
+    socket.on("orderAssigned", (updatedOrder) => {
+      setOrders((prev) => {
+        const updated = prev.map((o) =>
+          o._id === updatedOrder._id ? updatedOrder : o
+        );
+
+        return updated.sort((a, b) => {
+          if (a.status === "cancelled" && b.status !== "cancelled") return 1;
+          if (a.status !== "cancelled" && b.status === "cancelled") return -1;
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+      });
     });
+
+    socket.on("orderUpdated", (updatedOrder) => {
+      setOrders((prev) => {
+        const updated = prev.map((o) =>
+          o._id === updatedOrder._id ? updatedOrder : o
+        );
+
+        return updated.sort((a, b) => {
+          if (a.status === "cancelled" && b.status !== "cancelled") return 1;
+          if (a.status !== "cancelled" && b.status === "cancelled") return -1;
+          return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+      });
+    });
+
 
     return () => {
       socket.off("orderUpdated");
+      socket.off("orderAssigned");
     };
   }, [user, loadingUser, navigate]);
+
+  const cancelOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
+
+    try {
+      const res = await api.put(`/customer/orders/${orderId}/cancel`);
+
+      // Update locally
+      setOrders(prev =>
+        prev.map(o => o._id === orderId ? res.data.order : o)
+      );
+
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to cancel order");
+      console.error(err);
+    }
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
@@ -174,6 +229,20 @@ export default function MyOrders() {
                           variant="outlined"
                           sx={{ fontWeight: 600, height: 36 }}
                         />
+
+                        {/* CANCEL BUTTON — only show when not delivered or cancelled */}
+                        {(order.status !== "delivered" && order.status !== "cancelled") && (
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            size="medium"
+                            sx={{ minWidth: 140 }}
+                            onClick={() => cancelOrder(order._id)}
+                          >
+                            Cancel Order
+                          </Button>
+                        )}
+
                         <Button
                           component={Link}
                           to={`/orders/${order._id}`}
@@ -191,7 +260,7 @@ export default function MyOrders() {
                     <>
                       <Divider sx={{ my: 2 }} />
                       <Typography variant="body2" color="text.secondary">
-                        {order.items.length} item{order.items.length > 1 ? "s" : ""} •{" "}
+                        {order.items.reduce((sum, item) => sum + item.qty, 0)} item{order.items.reduce((sum, item) => sum + item.qty, 0) > 1 ? "s" : ""}{" "}•{" "}
                         {order.items.slice(0, 3).map((item) => item.product?.name || "Product").join(", ")}
                         {order.items.length > 3 && " and more..."}
                       </Typography>

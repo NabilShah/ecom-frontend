@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../../api/axiosClient";
 import { Button, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
 import { Link } from "react-router-dom";
+import socket from "../../sockets/customerSocket";
 
 export default function ProductsList() {
   const [products, setProducts] = useState([]);
@@ -25,6 +26,22 @@ export default function ProductsList() {
 
   useEffect(() => {
     api.get("/customer/products").then((res) => setProducts(res.data));
+  }, []);
+
+  useEffect(() => {
+
+    // STOCK ONLY UPDATE (already implemented)
+    socket.on("stockUpdated", ({ productId, stock }) => {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === productId ? { ...p, stock } : p
+        )
+      );
+    });
+
+    return () => {
+      socket.off("stockUpdated");
+    };
   }, []);
 
   const deleteProduct = async (id) => {

@@ -48,38 +48,45 @@ export default function DeliveryOrder() {
     joinDeliveryRoom(user.id);
 
     const onOrderUpdated = (updated) => {
-      setOrders((prev) =>
-        prev.some((o) => o._id === updated._id) ? prev.map((o) => (o._id === updated._id ? updated : o)) : prev
-      );
+        setOrders((prev) =>
+        prev.some((o) => o._id === updated._id)
+            ? prev.map((o) => (o._id === updated._id ? updated : o))
+            : prev
+        );
     };
 
     const onOrderAssigned = (updated) => {
-      if (updated.assignedTo === user.id) {
+        if (updated.assignedTo === user.id) {
         setOrders((prev) =>
-          prev.some((o) => o._id === updated._id) ? prev.map((o) => (o._id === updated._id ? updated : o)) : [...prev, updated]
+            prev.some((o) => o._id === updated._id)
+            ? prev.map((o) => (o._id === updated._id ? updated : o))
+            : [...prev, updated]
         );
-      }
+        }
+    };
+
+    // 👇 NEW: customer places order → show instantly
+    const onNewOrder = (newOrder) => {
+        setOrders((prev) => [...prev, newOrder]);
     };
 
     socket.on("orderUpdated", onOrderUpdated);
     socket.on("orderAssigned", onOrderAssigned);
+    socket.on("newOrder", onNewOrder); // 👈 listen
 
     return () => {
-      socket.off("orderUpdated", onOrderUpdated);
-      socket.off("orderAssigned", onOrderAssigned);
+        socket.off("orderUpdated", onOrderUpdated);
+        socket.off("orderAssigned", onOrderAssigned);
+        socket.off("newOrder", onNewOrder); // 👈 cleanup
     };
-  }, [user]);
+    }, [user]);
 
   const statuses = ["unassigned", "accepted", "picked_up", "on_the_way", "delivered", "cancelled"];
   const statusIndex = statuses.reduce((m, s, i) => ((m[s] = i), m), {});
 
   const grouped = statuses.reduce((acc, status) => {
-    acc[status] = orders.filter((o) => {
-      const oIdx = statusIndex[o.status] ?? -1;
-      const sIdx = statusIndex[status];
-      return oIdx >= sIdx;
-    });
-    return acc;
+   acc[status] = orders.filter((o) => o.status === status);
+   return acc;
   }, {});
 
   return (
@@ -154,37 +161,53 @@ export default function DeliveryOrder() {
                     <TableCell>₹{o.total}</TableCell>
 
                     <TableCell>
-                      {status === o.status ? (
-                        o.status === "unassigned" ? (
-                          <Button
+                    {status === o.status ? (
+                        o.status === "cancelled" ? (
+                        <span
+                            style={{
+                            padding: "6px 12px",
+                            background: "#e0e0e0",
+                            color: "#555",
+                            borderRadius: "4px",
+                            fontWeight: 600,
+                            textTransform: "capitalize",
+                            display: "inline-block"
+                            }}
+                        >
+                            Cancelled
+                        </span>
+                        ) : o.status === "unassigned" ? (
+                        <Button
                             variant="contained"
                             color="primary"
                             size="small"
                             onClick={async () => {
-                              try {
+                            try {
                                 const res = await api.post(`/delivery/accept/${o._id}`);
-                                setOrders((prev) => prev.map((ord) => (ord._id === o._id ? res.data.order : ord)));
-                              } catch (err) {
+                                setOrders((prev) =>
+                                prev.map((ord) => (ord._id === o._id ? res.data.order : ord))
+                                );
+                            } catch (err) {
                                 console.error(err);
-                              }
+                            }
                             }}
-                          >
+                        >
                             Accept
-                          </Button>
+                        </Button>
                         ) : (
-                          <select
+                        <select
                             value={o.status}
                             onChange={(e) => updateStatus(o._id, e.target.value)}
                             style={{ padding: "6px", borderRadius: "4px" }}
-                          >
+                        >
                             <option value={o.status}>{o.status.replaceAll("_", " ")}</option>
 
                             {o.status === "accepted" && <option value="picked_up">picked up</option>}
                             {o.status === "picked_up" && <option value="on_the_way">on the way</option>}
                             {o.status === "on_the_way" && <option value="delivered">delivered</option>}
-                          </select>
+                        </select>
                         )
-                      ) : null}
+                    ) : null}
                     </TableCell>
 
                     <TableCell>
