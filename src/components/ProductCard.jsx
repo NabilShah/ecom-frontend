@@ -10,11 +10,11 @@ export default function ProductCard({ product = {} }) {
   ? `${process.env.REACT_APP_IMAGE_URL}${product.images[0]}`
   : process.env.PUBLIC_URL + "/no_preview.png";
 
-  useEffect(() => {
-    console.log("imageUrl:", imageUrl);
-    console.log("baseUrl:", process.env.REACT_APP_IMAGE_URL);
-    console.log("imagePath:", product.images?.[0]);
-  }, [imageUrl, product]);
+  // useEffect(() => {
+  //   console.log("imageUrl:", imageUrl);
+  //   console.log("baseUrl:", process.env.REACT_APP_IMAGE_URL);
+  //   console.log("imagePath:", product.images?.[0]);
+  // }, [imageUrl, product]);
   
   const name = product.name || "Untitled product";
   const price = product.price ?? 0;
@@ -118,7 +118,7 @@ export default function ProductCard({ product = {} }) {
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
           <Rating value={Number(rating)} precision={0.5} size="small" readOnly />
           <Typography variant="caption" color="text.secondary">
-            ({product.reviewsCount ?? 0})
+            ({product.reviewsCount ?? 4})
           </Typography>
         </Box>
 

@@ -5,7 +5,11 @@ import Sidebar from "../admin/Sidebar";
 import { Box } from "@mui/material";
 
 export default function AdminLayout({ children }) {
-  const { user } = useContext(AuthContext);
+  const { user, loadingUser } = useContext(AuthContext);
+
+  if (loadingUser) {
+    return null;
+  }
 
   if (!user || user.role !== "admin") {
     return <Navigate to="/admin/login" />;
