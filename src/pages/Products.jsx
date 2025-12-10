@@ -15,24 +15,20 @@ export default function Products() {
   }, []);
 
   useEffect(() => {
-    // LIVE NEW PRODUCT
     socket.on("productCreated", (newProduct) => {
       setProducts((prev) => [...prev, newProduct]);
     });
 
-    // LIVE PRODUCT UPDATE
     socket.on("productUpdated", (updated) => {
       setProducts((prev) =>
         prev.map((p) => (p._id === updated._id ? updated : p))
       );
     });
 
-    // LIVE DELETE
     socket.on("productDeleted", (id) => {
       setProducts((prev) => prev.filter((p) => p._id !== id));
     });
 
-    // STOCK ONLY UPDATE (already implemented)
     socket.on("stockUpdated", ({ productId, stock }) => {
       setProducts((prev) =>
         prev.map((p) =>
