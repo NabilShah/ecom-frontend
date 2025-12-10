@@ -53,7 +53,6 @@ export default function Products() {
     console.log("Products from API:", products);
   }, [products]);
 
-  // simple client-side filter/sort for demo
   const filtered = products
     .filter((p) => p.name?.toLowerCase().includes(q.toLowerCase()))
     .sort((a, b) => {
@@ -68,22 +67,8 @@ export default function Products() {
         Latest Products
       </Typography>
 
-      {/* search + sort row */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: 2,
-          alignItems: "center",
-          mb: 3,
-          flexDirection: { xs: "column", sm: "row" },
-        }}
-      >
-        <TextField
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search products, brands, or categories"
-          size="small"
-          fullWidth
+      <Box sx={{ display: "flex", gap: 2, alignItems: "center", mb: 3, flexDirection: { xs: "column", sm: "row" }, }} >
+        <TextField value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products, brands, or categories" size="small" fullWidth
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -94,13 +79,7 @@ export default function Products() {
         />
 
         <Box sx={{ minWidth: 140 }}>
-          <Select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            displayEmpty
-            size="small"
-            fullWidth
-          >
+          <Select  value={sort}  onChange={(e) => setSort(e.target.value)}  displayEmpty  size="small"  fullWidth >
             <MenuItem value="">Sort: Featured</MenuItem>
             <MenuItem value="low">Price: Low to High</MenuItem>
             <MenuItem value="high">Price: High to Low</MenuItem>
@@ -108,19 +87,7 @@ export default function Products() {
         </Box>
       </Box>
 
-      {/* responsive grid using CSS grid — guarantees 5 columns on large screens */}
-      <Box
-        sx={{
-          display: "grid",
-          gap: 20 / 8, // spacing ~ 2.5
-          gridTemplateColumns: {
-            xs: "repeat(1, 1fr)",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-            lg: "repeat(5, 1fr)", // five per row on large screens
-          },
-        }}
-      >
+      <Box sx={{ display: "grid", gap: 20 / 8, gridTemplateColumns: { xs: "repeat(1, 1fr)", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)", lg: "repeat(5, 1fr)", }, }} >
         {filtered.map((p) => (
           <Box key={p._id}>
             <ProductCard product={p} />

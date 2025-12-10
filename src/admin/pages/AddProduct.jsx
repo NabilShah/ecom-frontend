@@ -5,19 +5,12 @@ import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function AddProduct() {
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    price: "",
-    stock: "",
-    images: "",
-  });
+  const [form, setForm] = useState({ name: "", description: "", price: "", stock: "", images: "", });
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState([]);
   const { user, loadingUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // protect admin
   useEffect(() => {
     if (loadingUser) return;
     if (!user || user.role !== "admin") navigate("/admin/login");
@@ -41,7 +34,6 @@ export default function AddProduct() {
         headers: { "Content-Type": "multipart/form-data" }
         });
 
-        // Add new uploaded URL
         setImages((prev) => [...prev, res.data.url]);
 
     } catch (error) {
@@ -56,12 +48,7 @@ export default function AddProduct() {
     };
 
   const submit = async () => {
-    await api.post("/admin/createProduct", {
-      ...form,
-      price: Number(form.price),
-      stock: Number(form.stock),
-      images: images,
-    });
+    await api.post("/admin/createProduct", {...form, price: Number(form.price), stock: Number(form.stock), images: images,});
     navigate("/admin/products");
   };
 
@@ -82,50 +69,13 @@ export default function AddProduct() {
 
         {uploading && <p>Uploading...</p>}
 
-        <Box
-            sx={{
-            display: "flex",
-            gap: 2,
-            mt: 2,
-            flexWrap: "wrap",
-            }}
-        >
+        <Box sx={{ display: "flex", gap: 2, mt: 2, flexWrap: "wrap", }} >
             {images.map((img, i) => (
             <Box key={i} sx={{ position: "relative", display: "inline-block" }}>
-                
-                {/* IMAGE */}
-                <img
-                src={`${process.env.REACT_APP_IMAGE_URL}${img}`}
-                alt="product_img"
-                width={80}
-                height={80}
-                style={{
-                    borderRadius: 8,
-                    objectFit: "cover",
-                    border: "1px solid #ccc",
-                }}
+                <img src={`${process.env.REACT_APP_IMAGE_URL}${img}`} alt="product_img" width={80} height={80} style={{ borderRadius: 8, objectFit: "cover", border: "1px solid #ccc", }}
                 />
 
-                {/* DELETE BUTTON */}
-                <span
-                onClick={() => removeImage(img)}
-                style={{
-                    position: "absolute",
-                    top: -10,
-                    right: -10,
-                    background: "#000",
-                    color: "#fff",
-                    borderRadius: "50%",
-                    width: 20,
-                    height: 20,
-                    fontSize: 14,
-                    textAlign: "center",
-                    cursor: "pointer",
-                    lineHeight: "20px",
-                }}
-                >
-                &times;
-                </span>
+                <span onClick={() => removeImage(img)} style={{ position: "absolute", top: -10, right: -10, background: "#000", color: "#fff", borderRadius: "50%", width: 20, height: 20, fontSize: 14, textAlign: "center", cursor: "pointer", lineHeight: "20px", }} >&times;</span>
 
             </Box>
             ))}

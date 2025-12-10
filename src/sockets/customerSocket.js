@@ -14,7 +14,7 @@ export const joinDeliveryRoom = (deliveryId) => {
   socket.emit("joinDelivery", deliveryId);
 };
 
-// ADMIN ROOM (optional)
+// ADMIN ROOM
 export const joinAdminRoom = () => {
   socket.emit("joinAdmin");
 };

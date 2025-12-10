@@ -7,14 +7,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(true);
 
-  // load user from token
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token && token.split(".").length === 3) {
       try {
         const decoded = jwtDecode(token);
-        setUser(decoded);        // 🔥 Restore user from decoded token
+        setUser(decoded);
       } catch (err) {
         localStorage.removeItem("token");
         setUser(null);

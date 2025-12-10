@@ -10,26 +10,11 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Floating Sticky Menu Button */}
-      <Fab
-        color="primary"
-        onClick={() => setOpen(!open)}
-        sx={{
-          position: "fixed",
-          bottom: 20,
-          left: 20,
-          zIndex: 2000
-        }}
-      >
+      <Fab color="primary" onClick={() => setOpen(!open)} sx={{ position: "fixed", bottom: 20, left: 20, zIndex: 2000 }} >
         {open ? <CloseIcon /> : <MenuIcon />}
       </Fab>
 
-      {/* Sidebar Drawer */}
-      <Drawer
-        anchor="left"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
+      <Drawer anchor="left" open={open} onClose={() => setOpen(false)} >
         <Box sx={{ width: 260, mt: 4 }}>
           <List>
 

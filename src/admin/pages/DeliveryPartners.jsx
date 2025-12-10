@@ -1,9 +1,6 @@
 import { useEffect, useState, useContext } from "react";
 import api from "../../api/axiosClient";
-import {
-  Table, TableHead, TableRow, TableCell, TableBody,
-  Container, Typography
-} from "@mui/material";
+import { Table, TableHead, TableRow, TableCell, TableBody, Container, Typography } from "@mui/material";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +9,6 @@ export default function DeliveryPartners() {
   const { user, loadingUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Admin protection
   useEffect(() => {
     if (loadingUser) return;
 
@@ -21,7 +17,6 @@ export default function DeliveryPartners() {
     }
   }, [user, loadingUser, navigate]);
 
-  // Fetch delivery partners
   useEffect(() => {
     api.get("/admin/delivery-partners").then((res) => setPartners(res.data));
   }, []);

@@ -13,7 +13,6 @@ export default function UpdateProduct() {
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState([]);
 
-  // protect admin
   useEffect(() => {
     if (loadingUser) return;
     if (!user || user.role !== "admin") navigate("/admin/login");
@@ -22,12 +21,7 @@ export default function UpdateProduct() {
   useEffect(() => {
     api.get(`/customer/products/${id}`).then((res) => {
       const p = res.data;
-      setForm({
-        name: p.name,
-        description: p.description,
-        price: p.price,
-        stock: p.stock,
-      });
+      setForm({ name: p.name, description: p.description, price: p.price, stock: p.stock, });
       setImages(p.images);
     });
   }, [id]);
@@ -50,7 +44,6 @@ export default function UpdateProduct() {
         headers: { "Content-Type": "multipart/form-data" }
         });
 
-        // Add new uploaded URL
         setImages((prev) => [...prev, res.data.url]);
 
     } catch (error) {
@@ -61,12 +54,7 @@ export default function UpdateProduct() {
   };
 
   const update = async () => {
-    await api.put(`/admin/updateProduct/${id}`, {
-      ...form,
-      price: Number(form.price),
-      stock: Number(form.stock),
-      images: images,
-    });
+    await api.put(`/admin/updateProduct/${id}`, { ...form, price: Number(form.price), stock: Number(form.stock), images: images, });
     navigate("/admin/products");
   };
 
@@ -83,7 +71,6 @@ export default function UpdateProduct() {
       <TextField label="Description" name="description" value={form.description} fullWidth margin="normal" onChange={handleChange} />
       <TextField label="Price" name="price" value={form.price} type="number" fullWidth margin="normal" onChange={handleChange} />
       <TextField label="Stock" name="stock" value={form.stock} type="number" fullWidth margin="normal" onChange={handleChange} />
-      {/* <TextField label="Images" name="images" value={form.images} fullWidth margin="normal" onChange={handleChange} /> */}
       <Box sx={{ my: 2 }}>
         <Button variant="outlined" component="label">
             Upload Image
@@ -92,51 +79,12 @@ export default function UpdateProduct() {
 
         {uploading && <p>Uploading...</p>}
 
-        <Box
-            sx={{
-            display: "flex",
-            gap: 2,
-            mt: 2,
-            flexWrap: "wrap",
-            }}
-        >
+        <Box sx={{ display: "flex", gap: 2, mt: 2, flexWrap: "wrap", }} >
             {images.map((img, i) => (
             <Box key={i} sx={{ position: "relative", display: "inline-block" }}>
-                
-                {/* IMAGE */}
-                <img
-                src={`${process.env.REACT_APP_IMAGE_URL}${img}`}
-                alt="product_img"
-                width={80}
-                height={80}
-                style={{
-                    borderRadius: 8,
-                    objectFit: "cover",
-                    border: "1px solid #ccc",
-                }}
-                />
+                <img src={`${process.env.REACT_APP_IMAGE_URL}${img}`} alt="product_img" width={80} height={80} style={{ borderRadius: 8, objectFit: "cover", border: "1px solid #ccc", }} />
 
-                {/* DELETE BUTTON */}
-                <span
-                onClick={() => removeImage(img)}
-                style={{
-                    position: "absolute",
-                    top: -10,
-                    right: -10,
-                    background: "#000",
-                    color: "#fff",
-                    borderRadius: "50%",
-                    width: 20,
-                    height: 20,
-                    fontSize: 14,
-                    textAlign: "center",
-                    cursor: "pointer",
-                    lineHeight: "20px",
-                }}
-                >
-                &times;
-                </span>
-
+                <span onClick={() => removeImage(img)} style={{ position: "absolute", top: -10, right: -10, background: "#000", color: "#fff", borderRadius: "50%", width: 20, height: 20, fontSize: 14, textAlign: "center", cursor: "pointer", lineHeight: "20px", }} >&times;</span>
             </Box>
             ))}
         </Box>

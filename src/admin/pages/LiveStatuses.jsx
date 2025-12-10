@@ -1,10 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import api from "../../api/axiosClient";
 import { AuthContext } from "../../context/AuthContext";
-import {
-  Table, TableHead, TableRow, TableCell, TableBody,
-  Container, Typography, Button
-} from "@mui/material";
+import { Table, TableHead, TableRow, TableCell, TableBody, Container, Typography, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import socket, { joinAdminRoom } from "../../sockets/customerSocket";
 
@@ -13,7 +10,6 @@ export default function LiveStatuses() {
   const { user, loadingUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Protect admin
   useEffect(() => {
     if (loadingUser) return;
     if (!user || user.role !== "admin") {
@@ -26,36 +22,25 @@ export default function LiveStatuses() {
   }, []);
 
     useEffect(() => {
-    if (!user || user.role !== "admin") return;
+      if (!user || user.role !== "admin") return;
 
-    joinAdminRoom();
+      joinAdminRoom();
 
-    // Helper: sort newest → oldest
-    const sortOrders = (list) =>
-        [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const sortOrders = (list) => [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    // 🔥 When customer places a new order
-    const onNewOrder = (order) => {
-        setOrders(prev => sortOrders([order, ...prev]));
-    };
+      const onNewOrder = (order) => {
+          setOrders(prev => sortOrders([order, ...prev]));
+      };
 
-    // 🔥 When delivery accepts an order
-    const onOrderAssigned = (updated) => {
+      const onOrderAssigned = (updated) => {
         setOrders(prev =>
-        sortOrders(
-            prev.some(o => o._id === updated._id)
-            ? prev.map(o => (o._id === updated._id ? updated : o))
-            : [updated, ...prev]
-        )
+          sortOrders( prev.some(o => o._id === updated._id) ? prev.map(o => (o._id === updated._id ? updated : o)) : [updated, ...prev] )
         );
     };
 
-    // 🔥 When delivery updates status: picked_up / on_the_way / delivered / cancelled
     const onOrderUpdated = (updated) => {
         setOrders(prev =>
-        sortOrders(
-            prev.map(o => (o._id === updated._id ? updated : o))
-        )
+          sortOrders( prev.map(o => (o._id === updated._id ? updated : o)) )
         );
     };
 
@@ -79,7 +64,6 @@ export default function LiveStatuses() {
     "cancelled",
   ];
 
-  // Group orders by status
   const grouped = statuses.reduce((acc, status) => {
     acc[status] = orders.filter((o) => o.status === status);
     return acc;
@@ -93,81 +77,67 @@ export default function LiveStatuses() {
 
       {statuses.map((status) => (
     <Container key={status} sx={{ mt: 5 }}>
-        <Typography
-        variant="h5"
-        sx={{
-            mb: 2,
-            fontWeight: 700,
-            textTransform: "capitalize",
-            color:
-            status === "unassigned" ? "red" :
-            status === "accepted" ? "orange" :
-            status === "picked_up" ? "blue" :
-            status === "on_the_way" ? "purple" :
-            status === "delivered" ? "green" :
-            "grey"
-        }}
-        >
-        {status.replaceAll("_", " ")} ({grouped[status].length})
+        <Typography variant="h5" sx={{ mb: 2, fontWeight: 700, textTransform: "capitalize", color: status === "unassigned" ? "red" : status === "accepted" ? "orange" : status === "picked_up" ? "blue" : status === "on_the_way" ? "purple" : status === "delivered" ? "green" : "grey" }}>
+          {status.replaceAll("_", " ")} ({grouped[status].length})
         </Typography>
 
         <Table>
-        <TableHead>
-            <TableRow>
-            <TableCell>Order ID</TableCell>
-            <TableCell>Customer</TableCell>
-            <TableCell>Total</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Delivery Partner</TableCell>
-            <TableCell>Placed On</TableCell>
-            </TableRow>
-        </TableHead>
+          <TableHead>
+              <TableRow>
+              <TableCell>Order ID</TableCell>
+              <TableCell>Customer</TableCell>
+              <TableCell>Total</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Delivery Partner</TableCell>
+              <TableCell>Placed On</TableCell>
+              </TableRow>
+          </TableHead>
 
-        <TableBody>
-            {grouped[status].length === 0 ? (
-            <TableRow>
-                <TableCell colSpan={6} style={{ textAlign: "center", padding: 20 }}>
-                No orders in this category
-                </TableCell>
-            </TableRow>
-            ) : (
-            grouped[status].map((o) => (
-                <TableRow key={o._id}>
-                <TableCell>{o._id}</TableCell>
+          <TableBody>
+              {grouped[status].length === 0 ? (
+              <TableRow>
+                  <TableCell colSpan={6} style={{ textAlign: "center", padding: 20 }}>
+                  No orders in this category
+                  </TableCell>
+              </TableRow>
+              ) : (
+              grouped[status].map((o) => (
+                  <TableRow key={o._id}>
+                  <TableCell>{o._id}</TableCell>
 
-                <TableCell>
-                    {o.customer ? (
-                    <>
-                        <strong>{o.customer.name}</strong><br />
-                        {o.customer.email}<br />
-                        {o.customer.phone}
-                    </>
-                    ) : "Deleted User"}
-                </TableCell>
+                  <TableCell>
+                      {o.customer ? (
+                      <>
+                          <strong>{o.customer.name}</strong><br />
+                          {o.customer.email}<br />
+                          {o.customer.phone}
+                      </>
+                      ) : "Deleted User"}
+                  </TableCell>
 
-                <TableCell>₹{o.total}</TableCell>
-                <TableCell style={{ textTransform: "capitalize" }}>
-                    {o.status.replaceAll("_", " ")}
-                </TableCell>
+                  <TableCell>₹{o.total}</TableCell>
+                  <TableCell style={{ textTransform: "capitalize" }}>
+                      {o.status.replaceAll("_", " ")}
+                  </TableCell>
 
-                <TableCell>
-                    {o.assignedTo ? (
-                    <>
-                        {o.assignedTo.name}<br />
-                        {o.assignedTo.phone}
-                    </>
-                    ) : (
-                    <span style={{ color: "red" }}>Unassigned</span>
-                    )}
-                </TableCell>
+                  <TableCell>
+                      {o.assignedTo ? (
+                      <>
+                          {o.assignedTo.name}<br />
+                          {o.assignedTo.phone}
+                      </>
+                      ) : (
+                      <span style={{ color: "red" }}>Unassigned</span>
+                      )}
+                  </TableCell>
 
-                <TableCell>
-                    {new Date(o.createdAt).toLocaleString()}
-                </TableCell>
-                </TableRow>
-            ))
-            )}
-        </TableBody>
+                  <TableCell>
+                      {new Date(o.createdAt).toLocaleString()}
+                  </TableCell>
+                  </TableRow>
+              ))
+              )}
+          </TableBody>
         </Table>
     </Container>
     ))}

@@ -6,7 +6,6 @@ import { AuthContext } from "../context/AuthContext";
 import { Container, Typography, Chip, Box, Card, CardContent, Divider } from "@mui/material";
 import { CheckCircle, LocalShipping, AccessTime, Cancel, Receipt } from "@mui/icons-material";
 
-// 🔥 STATUS CONFIG (same as MyOrders)
 const getStatusConfig = (status) => {
   switch (status?.toLowerCase()) {
 
@@ -69,7 +68,6 @@ export default function OrderDetail() {
         Order Details
       </Typography>
 
-      {/* ORDER CARD */}
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="subtitle2" color="text.secondary">
@@ -79,15 +77,8 @@ export default function OrderDetail() {
             #{order._id?.slice(-8).toUpperCase()}
           </Typography>
 
-          {/* STATUS */}
           <Box sx={{ mb: 2 }}>
-            <Chip
-              icon={status.icon}
-              label={status.label}
-              color={status.color}
-              variant="outlined"
-              sx={{ fontSize: 16, fontWeight: 600 }}
-            />
+            <Chip icon={status.icon} label={status.label} color={status.color} variant="outlined" sx={{ fontSize: 16, fontWeight: 600 }} />
           </Box>
 
           <Divider sx={{ my: 2 }} />
@@ -124,7 +115,6 @@ export default function OrderDetail() {
 
           <Divider sx={{ my: 2 }} />
 
-          {/* DELIVERY PARTNER SECTION */}
           <Typography variant="h6" sx={{ mb: 1 }}>
             Delivery Partner
           </Typography>
@@ -136,22 +126,12 @@ export default function OrderDetail() {
               </Typography>            
               <Typography variant="body1">
                 <strong>Email:</strong>{" "}
-                <a
-                  href={`mailto:${order.assignedTo.email}`}
-                  style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}
-                >
-                  {order.assignedTo.email}
-                </a>
+                <a href={`mailto:${order.assignedTo.email}`} style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }} >{order.assignedTo.email}</a>
               </Typography>
               {order.assignedTo.phone && (
                 <Typography variant="body1">
                   <strong>Phone:</strong>{" "}
-                  <a
-                    href={`tel:${order.assignedTo.phone}`}
-                    style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }}
-                  >
-                    {order.assignedTo.phone}
-                  </a>
+                  <a href={`tel:${order.assignedTo.phone}`} style={{ color: "#1976d2", textDecoration: "none", fontWeight: 600 }} >{order.assignedTo.phone}</a>
                 </Typography>
               )}
             </Box>

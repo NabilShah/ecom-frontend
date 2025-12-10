@@ -20,7 +20,7 @@ export default function ProductsList() {
     }
 
     if (user.role !== "admin") {
-      navigate("/");      // redirect non-admin users
+      navigate("/");
     }
   }, [user, loadingUser, navigate]);
 
@@ -30,7 +30,6 @@ export default function ProductsList() {
 
   useEffect(() => {
 
-    // STOCK ONLY UPDATE (already implemented)
     socket.on("stockUpdated", ({ productId, stock }) => {
       setProducts((prev) =>
         prev.map((p) =>

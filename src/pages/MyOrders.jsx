@@ -56,7 +56,7 @@ export default function MyOrders() {
         const sorted = [...res.data].sort((a, b) => {
           if (a.status === "cancelled" && b.status !== "cancelled") return 1;
           if (a.status !== "cancelled" && b.status === "cancelled") return -1;
-          return new Date(b.createdAt) - new Date(a.createdAt); // newest first
+          return new Date(b.createdAt) - new Date(a.createdAt);
         });
 
         setOrders(sorted);
@@ -111,7 +111,6 @@ export default function MyOrders() {
     try {
       const res = await api.put(`/customer/orders/${orderId}/cancel`);
 
-      // Update locally
       setOrders(prev =>
         prev.map(o => o._id === orderId ? res.data.order : o)
       );
@@ -124,15 +123,7 @@ export default function MyOrders() {
 
   return (
     <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
-      <Typography
-        variant="h4"
-        fontWeight={700}
-        gutterBottom
-        sx={{
-          background: "linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-        }}
+      <Typography variant="h4" fontWeight={700} gutterBottom sx={{ background: "linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", }}
       >
         My Orders
       </Typography>
@@ -172,14 +163,7 @@ export default function MyOrders() {
 
           return (
             <Grid item xs={12} key={order._id}>
-              <Card
-                elevation={2}
-                sx={{
-                  transition: "0.3s",
-                  "&:hover": { elevation: 6, boxShadow: 6 },
-                  borderRadius: 2,
-                }}
-              >
+              <Card elevation={2} sx={{ transition: "0.3s", "&:hover": { elevation: 6, boxShadow: 6 }, borderRadius: 2, }} >
                 <CardContent sx={{ p: 3 }}>
                   <Grid container spacing={3} alignItems="center">
                     <Grid item xs={12} md={8}>
@@ -198,9 +182,7 @@ export default function MyOrders() {
                             Placed On
                           </Typography>
                           <Typography variant="body1">
-                            {order.createdAt
-                              ? format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a")
-                              : "N/A"}
+                            {order.createdAt ? format(new Date(order.createdAt), "dd MMM yyyy, hh:mm a") : "N/A"}
                           </Typography>
                         </Box>
                         <Divider orientation="vertical" flexItem />
@@ -216,40 +198,16 @@ export default function MyOrders() {
                     </Grid>
 
                     <Grid item xs={12} md={4}>
-                      <Stack
-                        direction={{ xs: "column", sm: "row" }}
-                        spacing={2}
-                        alignItems={{ md: "flex-end" }}
-                        justifyContent="flex-end"
-                      >
-                        <Chip
-                          icon={status.icon}
-                          label={status.label}
-                          color={status.color}
-                          variant="outlined"
-                          sx={{ fontWeight: 600, height: 36 }}
-                        />
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ md: "flex-end" }} justifyContent="flex-end" >
+                        <Chip icon={status.icon} label={status.label} color={status.color} variant="outlined" sx={{ fontWeight: 600, height: 36 }} />
 
-                        {/* CANCEL BUTTON — only show when not delivered or cancelled */}
                         {(order.status !== "delivered" && order.status !== "cancelled") && (
-                          <Button
-                            variant="outlined"
-                            color="error"
-                            size="medium"
-                            sx={{ minWidth: 140 }}
-                            onClick={() => cancelOrder(order._id)}
-                          >
+                          <Button variant="outlined" color="error" size="medium" sx={{ minWidth: 140 }} onClick={() => cancelOrder(order._id)} >
                             Cancel Order
                           </Button>
                         )}
 
-                        <Button
-                          component={Link}
-                          to={`/orders/${order._id}`}
-                          variant="contained"
-                          size="medium"
-                          sx={{ minWidth: 140 }}
-                        >
+                        <Button component={Link} to={`/orders/${order._id}`} variant="contained" size="medium" sx={{ minWidth: 140 }} >
                           View Details
                         </Button>
                       </Stack>

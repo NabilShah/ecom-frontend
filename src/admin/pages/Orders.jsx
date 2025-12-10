@@ -1,10 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import api from "../../api/axiosClient";
 import { AuthContext } from "../../context/AuthContext";
-import {
-  Table, TableHead, TableRow, TableCell, TableBody,
-  Container, Typography, Button
-} from "@mui/material";
+import { Table, TableHead, TableRow, TableCell, TableBody, Container, Typography, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import socket, { joinAdminRoom } from "../../sockets/customerSocket";
 
@@ -13,7 +10,6 @@ export default function AdminOrders() {
   const { user, loadingUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // Protect admin
   useEffect(() => {
     if (loadingUser) return;
     if (!user || user.role !== "admin") {
@@ -21,10 +17,9 @@ export default function AdminOrders() {
     }
   }, [user, loadingUser, navigate]);
 
-   useEffect(() => {
+  useEffect(() => {
     async function loadOrders() {
       const res = await api.get("/admin/orders");
-      // sort newest first
       const sorted = [...res.data].sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
       );
@@ -33,13 +28,11 @@ export default function AdminOrders() {
     loadOrders();
   }, []);
 
-  // Socket live updates
   useEffect(() => {
     if (!user || user.role !== "admin") return;
 
     joinAdminRoom();
 
-    // helper to keep sorting consistent
     const sortOrders = (list) =>
       [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
@@ -49,11 +42,7 @@ export default function AdminOrders() {
 
     const onOrderAssigned = (updated) => {
       setOrders((prev) =>
-        sortOrders(
-          prev.some((o) => o._id === updated._id)
-            ? prev.map((o) => (o._id === updated._id ? updated : o))
-            : [updated, ...prev]
-        )
+        sortOrders( prev.some((o) => o._id === updated._id) ? prev.map((o) => (o._id === updated._id ? updated : o)) : [updated, ...prev] )
       );
     };
 

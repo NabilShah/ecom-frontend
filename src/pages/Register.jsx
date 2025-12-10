@@ -17,40 +17,23 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: "",
-    severity: "info",
-  });
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "info", });
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubmit = async () => {
-    // Field checks
     if (!form.name || !form.email || !form.password || !form.confirmPassword) {
-      setSnackbar({
-        open: true,
-        message: "Please fill in all fields.",
-        severity: "warning",
-      });
+      setSnackbar({ open: true, message: "Please fill in all fields.", severity: "warning", });
       return;
     }
 
     if (!isValidEmail(form.email)) {
-      setSnackbar({
-        open: true,
-        message: "Please enter a valid email address.",
-        severity: "warning",
-      });
+      setSnackbar({ open: true, message: "Please enter a valid email address.", severity: "warning", });
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      setSnackbar({
-        open: true,
-        message: "Passwords do not match!",
-        severity: "error",
-      });
+      setSnackbar({ open: true, message: "Passwords do not match!", severity: "error", });
       return;
     }
 
@@ -62,19 +45,11 @@ export default function Register() {
         role: "customer",
       });
 
-      setSnackbar({
-        open: true,
-        message: "Registered successfully! Redirecting to login...",
-        severity: "success",
-      });
+      setSnackbar({ open: true, message: "Registered successfully! Redirecting to login...", severity: "success", });
 
       setTimeout(() => navigate("/login"), 1800);
     } catch (err) {
-      setSnackbar({
-        open: true,
-        message: "Registration failed. Email may already exist.",
-        severity: "error",
-      });
+      setSnackbar({ open: true, message: "Registration failed. Email may already exist.", severity: "error", });
     }
   };
 
@@ -85,21 +60,9 @@ export default function Register() {
           Create Account
         </Typography>
 
-        <TextField
-          fullWidth
-          label="Name"
-          margin="normal"
-          value={form.name}
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
+        <TextField fullWidth label="Name" margin="normal" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
 
-        <TextField
-          fullWidth
-          label="Email"
-          margin="normal"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          error={form.email.length > 0 && !isValidEmail(form.email)}
+        <TextField fullWidth label="Email" margin="normal" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} error={form.email.length > 0 && !isValidEmail(form.email)}
           helperText={
             form.email.length > 0 && !isValidEmail(form.email)
               ? "Enter a valid email address"
@@ -107,13 +70,7 @@ export default function Register() {
           }
         />
 
-        <TextField
-          fullWidth
-          label="Password"
-          type={showPassword ? "text" : "password"}
-          margin="normal"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
+        <TextField fullWidth label="Password" type={showPassword ? "text" : "password"} margin="normal" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -125,13 +82,7 @@ export default function Register() {
           }}
         />
 
-        <TextField
-          fullWidth
-          label="Confirm Password"
-          type={showConfirmPassword ? "text" : "password"}
-          margin="normal"
-          value={form.confirmPassword}
-          onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+        <TextField fullWidth label="Confirm Password" type={showConfirmPassword ? "text" : "password"} margin="normal" value={form.confirmPassword} onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -146,45 +97,22 @@ export default function Register() {
           }}
         />
 
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{ mt: 2 }}
-          onClick={handleSubmit}
-        >
+        <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={handleSubmit} >
           Register
         </Button>
 
         <Box sx={{ textAlign: "center", mt: 2 }}>
           <Typography variant="body2">
             Already have an account?{" "}
-            <Link
-              to="/login"
-              style={{
-                textDecoration: "none",
-                color: "#1976d2",
-                fontWeight: 500,
-                cursor: "pointer",
-              }}
-            >
+            <Link to="/login" style={{ textDecoration: "none", color: "#1976d2", fontWeight: 500, cursor: "pointer", }} >
               Sign In
             </Link>
           </Typography>
         </Box>
       </Paper>
 
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={2500}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
+      <Snackbar open={snackbar.open} autoHideDuration={2500} onClose={() => setSnackbar({ ...snackbar, open: false })} anchorOrigin={{ vertical: "bottom", horizontal: "center" }} >
+        <Alert onClose={() => setSnackbar({ ...snackbar, open: false })} severity={snackbar.severity} variant="filled" sx={{ width: "100%" }} >
           {snackbar.message}
         </Alert>
       </Snackbar>

@@ -36,10 +36,7 @@ export default function ProductDetail() {
   useEffect(() => {
     socket.on("stockUpdated", ({ productId, stock }) => {
       if (productId === id) {
-        setProduct((prev) => ({
-          ...prev,
-          stock
-        }));
+        setProduct((prev) => ({ ...prev, stock }));
       }
     });
 
@@ -159,33 +156,15 @@ export default function ProductDetail() {
 
             <Grid container spacing={2}>
               <Grid item xs={12}>
-                <TextField
-                  label="Address"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  fullWidth
-                  size="small"
-                />
+                <TextField label="Address" value={address} onChange={(e) => setAddress(e.target.value)} fullWidth size="small" />
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="City"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  fullWidth
-                  size="small"
-                />
+                <TextField label="City" value={city} onChange={(e) => setCity(e.target.value)} fullWidth size="small" />
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="PIN / ZIP"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  fullWidth
-                  size="small"
-                />
+                <TextField label="PIN / ZIP" value={pin} onChange={(e) => setPin(e.target.value)} fullWidth size="small" />
               </Grid>
             </Grid>
           </Paper>
@@ -197,12 +176,7 @@ export default function ProductDetail() {
 
             <FormControl fullWidth size="small" sx={{ mb: 2 }}>
               <InputLabel id="pm-label">Method</InputLabel>
-              <Select
-                labelId="pm-label"
-                value={paymentMethod}
-                label="Method"
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              >
+              <Select labelId="pm-label" value={paymentMethod} label="Method" onChange={(e) => setPaymentMethod(e.target.value)} >
                 <MenuItem value="cod">Cash on Delivery</MenuItem>
                 <MenuItem value="card">Card (demo)</MenuItem>
                 <MenuItem value="upi">UPI (demo)</MenuItem>
@@ -236,27 +210,8 @@ export default function ProductDetail() {
             </Typography>
 
             <Box display="flex" gap={2} alignItems="center" mb={2}>
-              <Box
-                sx={{
-                  width: 96,
-                  height: 96,
-                  bgcolor: "#fafafa",
-                  borderRadius: 1,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                }}
-              >
-                <img
-                  src={
-                    product.images?.[0]
-                      ? `${process.env.REACT_APP_IMAGE_URL}${product.images[0]}`
-                      : "https://via.placeholder.com/150"
-                  }
-                  alt={product.name}
-                  style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }}
-                />
+              <Box sx={{ width: 96, height: 96, bgcolor: "#fafafa", borderRadius: 1, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", }} >
+                <img src={ product.images?.[0] ? `${process.env.REACT_APP_IMAGE_URL}${product.images[0]}` : "https://via.placeholder.com/150" } alt={product.name} style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
               </Box>
 
               <Box flex={1}>
@@ -268,8 +223,7 @@ export default function ProductDetail() {
                   <Typography variant="body2" color="text.secondary">
                     Qty:
                   </Typography>
-                  <TextField
-                    value={qty}
+                  <TextField value={qty} type="number" size="small" inputProps={{ min: 1, max: stock }} sx={{ width: 110 }} disabled={outOfStock}
                     onChange={(e) => {
                       let v = Number(e.target.value || 0);
                       if (isNaN(v)) v = 1;
@@ -277,11 +231,6 @@ export default function ProductDetail() {
                       if (v > stock) v = stock;
                       setQty(v);
                     }}
-                    type="number"
-                    size="small"
-                    inputProps={{ min: 1, max: stock }}
-                    sx={{ width: 110 }}
-                    disabled={outOfStock}
                   />
                 </Box>
 
@@ -316,13 +265,7 @@ export default function ProductDetail() {
               <Typography variant="h6">₹{total.toLocaleString(undefined, { maximumFractionDigits: 2 })}</Typography>
             </Box>
 
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={placeOrder}
-              disabled={placing || outOfStock}
-              sx={{ py: 1.5, textTransform: "none", background: "linear-gradient(180deg,#ff7a00,#ff6a00)" }}
-            >
+            <Button variant="contained" fullWidth onClick={placeOrder} disabled={placing || outOfStock} sx={{ py: 1.5, textTransform: "none", background: "linear-gradient(180deg,#ff7a00,#ff6a00)" }} >
               {placing ? "Placing order..." : outOfStock ? "Out of stock" : "Place Order"}
             </Button>
           </Paper>

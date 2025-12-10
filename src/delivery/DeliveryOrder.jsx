@@ -49,9 +49,7 @@ export default function DeliveryOrder() {
 
     const onOrderUpdated = (updated) => {
         setOrders((prev) =>
-        prev.some((o) => o._id === updated._id)
-            ? prev.map((o) => (o._id === updated._id ? updated : o))
-            : prev
+        prev.some((o) => o._id === updated._id) ? prev.map((o) => (o._id === updated._id ? updated : o)) : prev
         );
     };
 
@@ -65,24 +63,22 @@ export default function DeliveryOrder() {
         }
     };
 
-    // 👇 NEW: customer places order → show instantly
     const onNewOrder = (newOrder) => {
         setOrders((prev) => [...prev, newOrder]);
     };
 
     socket.on("orderUpdated", onOrderUpdated);
     socket.on("orderAssigned", onOrderAssigned);
-    socket.on("newOrder", onNewOrder); // 👈 listen
+    socket.on("newOrder", onNewOrder);
 
     return () => {
         socket.off("orderUpdated", onOrderUpdated);
         socket.off("orderAssigned", onOrderAssigned);
-        socket.off("newOrder", onNewOrder); // 👈 cleanup
+        socket.off("newOrder", onNewOrder);
     };
     }, [user]);
 
   const statuses = ["unassigned", "accepted", "picked_up", "on_the_way", "delivered", "cancelled"];
-  const statusIndex = statuses.reduce((m, s, i) => ((m[s] = i), m), {});
 
   const grouped = statuses.reduce((acc, status) => {
    acc[status] = orders.filter((o) => o.status === status);
@@ -99,10 +95,7 @@ export default function DeliveryOrder() {
         <Container key={status} sx={{ mt: 5 }}>
           <Typography
             variant="h5"
-            sx={{
-              mb: 2,
-              fontWeight: 700,
-              textTransform: "capitalize",
+            sx={{ mb: 2, fontWeight: 700, textTransform: "capitalize",
               color:
                 status === "unassigned"
                   ? "red"
@@ -163,24 +156,11 @@ export default function DeliveryOrder() {
                     <TableCell>
                     {status === o.status ? (
                         o.status === "cancelled" ? (
-                        <span
-                            style={{
-                            padding: "6px 12px",
-                            background: "#e0e0e0",
-                            color: "#555",
-                            borderRadius: "4px",
-                            fontWeight: 600,
-                            textTransform: "capitalize",
-                            display: "inline-block"
-                            }}
-                        >
+                          <span style={{ padding: "6px 12px", background: "#e0e0e0", color: "#555", borderRadius: "4px", fontWeight: 600, textTransform: "capitalize", display: "inline-block" }} >
                             Cancelled
-                        </span>
+                          </span>
                         ) : o.status === "unassigned" ? (
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size="small"
+                        <Button variant="contained" color="primary" size="small"
                             onClick={async () => {
                             try {
                                 const res = await api.post(`/delivery/accept/${o._id}`);
@@ -192,14 +172,10 @@ export default function DeliveryOrder() {
                             }
                             }}
                         >
-                            Accept
+                          Accept
                         </Button>
                         ) : (
-                        <select
-                            value={o.status}
-                            onChange={(e) => updateStatus(o._id, e.target.value)}
-                            style={{ padding: "6px", borderRadius: "4px" }}
-                        >
+                        <select value={o.status} onChange={(e) => updateStatus(o._id, e.target.value)} style={{ padding: "6px", borderRadius: "4px" }} >
                             <option value={o.status}>{o.status.replaceAll("_", " ")}</option>
 
                             {o.status === "accepted" && <option value="picked_up">picked up</option>}

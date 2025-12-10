@@ -21,7 +21,6 @@ export default function Navbar() {
     navigate("/login");
   };
 
-  // Hide navbar completely on admin login page
   if (isAdminLoginPage || isDeliveryLoginPage) return null;
   
   const toggleDrawer = () => setMobileOpen(!mobileOpen);
@@ -58,44 +57,21 @@ export default function Navbar() {
     <>
       <AppBar position="sticky" sx={{ mb: 2 }}>
         <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          {/* Logo */}
-          <Typography
-            variant="h6"
-            component={Link}
-            to="/"
-            sx={{
-              textDecoration: "none",
-              color: "#fff",
-              fontWeight: 700,
-              letterSpacing: 0.5,
-            }}
-          >
+          <Typography variant="h6" component={Link} to="/" sx={{ textDecoration: "none", color: "#fff", fontWeight: 700, letterSpacing: 0.5, }} >
             E-Commerce
           </Typography>
 
-          {/* ✅ If admin logged in: show only Logout */}
           {isAdmin || isDelivery ? (
-            <Button
-              color="inherit"
-              onClick={logout}
-              sx={{ display: "flex", ml: "auto" }}
-            >
+            <Button color="inherit" onClick={logout} sx={{ display: "flex", ml: "auto" }} >
               Logout
             </Button>
           ) : (
             <>
-              {/* Desktop Links */}
               <Box sx={{ display: { xs: "none", md: "flex" }, gap: 2 }}>
                 <NavLinks />
               </Box>
 
-              {/* Mobile Hamburger (only for customers/guests) */}
-              <IconButton
-                color="inherit"
-                edge="end"
-                sx={{ display: { xs: "block", md: "none" } }}
-                onClick={toggleDrawer}
-              >
+              <IconButton color="inherit" edge="end" sx={{ display: { xs: "block", md: "none" } }} onClick={toggleDrawer} >
                 <MenuIcon />
               </IconButton>
             </>
@@ -103,73 +79,24 @@ export default function Navbar() {
         </Toolbar>
       </AppBar>
 
-      {/* ✅ Mobile Drawer (only for customers/guests) */}
       {!isAdmin || !isDelivery && (
-        <Drawer
-          anchor="right"
-          open={mobileOpen}
-          onClose={toggleDrawer}
-          sx={{
-            "& .MuiDrawer-paper": {
-              width: 240,
-              backgroundColor: "#1976d2",
-              color: "#fff",
-            },
-          }}
-        >
+        <Drawer anchor="right" open={mobileOpen} onClose={toggleDrawer} sx={{ "& .MuiDrawer-paper": { width: 240, backgroundColor: "#1976d2", color: "#fff", }, }} >
           <List>
-            <ListItem
-              button
-              component={Link}
-              to="/products"
-              onClick={toggleDrawer}
-              sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }}
-            >
-              <ListItemText
-                primary="Products"
-                primaryTypographyProps={{ sx: { color: "#fff" } }}
-              />
+            <ListItem button component={Link} to="/products" onClick={toggleDrawer} sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }} >
+              <ListItemText primary="Products" primaryTypographyProps={{ sx: { color: "#fff" } }} />
             </ListItem>
 
-            <ListItem
-              button
-              component={Link}
-              to="/orders"
-              onClick={toggleDrawer}
-              sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }}
-            >
-              <ListItemText
-                primary="My Orders"
-                primaryTypographyProps={{ sx: { color: "#fff" } }}
-              />
+            <ListItem button component={Link} to="/orders" onClick={toggleDrawer} sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }} >
+              <ListItemText primary="My Orders" primaryTypographyProps={{ sx: { color: "#fff" } }} />
             </ListItem>
 
             {!user ? (
-              <ListItem
-                button
-                component={Link}
-                to="/login"
-                onClick={toggleDrawer}
-                sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }}
-              >
-                <ListItemText
-                  primary="Login"
-                  primaryTypographyProps={{ sx: { color: "#fff" } }}
-                />
+              <ListItem button component={Link} to="/login" onClick={toggleDrawer} sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }} >
+                <ListItemText primary="Login" primaryTypographyProps={{ sx: { color: "#fff" } }} />
               </ListItem>
             ) : (
-              <ListItem
-                button
-                onClick={() => {
-                  logout();
-                  toggleDrawer();
-                }}
-                sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }}
-              >
-                <ListItemText
-                  primary="Logout"
-                  primaryTypographyProps={{ sx: { color: "#fff" } }}
-                />
+              <ListItem button onClick={() => { logout(); toggleDrawer(); }} sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.15)" } }} >
+                <ListItemText primary="Logout" primaryTypographyProps={{ sx: { color: "#fff" } }} />
               </ListItem>
             )}
           </List>
